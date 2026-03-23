@@ -2,29 +2,21 @@
 
 /**
  * Inclui o arquivo de conexão com o banco de dados.
- *
- * __DIR__ retorna o diretório atual do arquivo,
- * o que evita problemas de caminho relativo.
  */
 require __DIR__ . "/connect.php";
 
 /**
  * Obtém a instância da conexão com o banco.
- * Esse método foi definido na classe Connect.
  */
 $pdo = Connect::getInstance();
 
 /**
- * Executa uma consulta SQL para buscar todos os usuários
- * da tabela "users", ordenando pelo campo "id" em ordem crescente.
- *
- * query() é usado quando não há parâmetros dinâmicos.
+ * Executa uma consulta SQL para buscar todos os usuários.
  */
 $stmt = $pdo->query("SELECT * FROM users ORDER BY id ASC");
 
 /**
- * fetchAll() busca todos os registros retornados pela consulta
- * e os armazena em um array.
+ * fetchAll() busca todos os registros.
  */
 $users = $stmt->fetchAll();
 
@@ -32,102 +24,111 @@ $users = $stmt->fetchAll();
 
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
-    <title>CRUD PHP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNIAENE | Gestão de Alunos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-    <h1>Cadastro de Alunos</h1>
+    <header class="main-header">
+        <div class="header-container">
+            <h1 class="logo">UNIAENE</h1>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#lista">Alunos Cadastrados</a></li>
+                    <li><a href="https://github.com/UNIAENE-GTI/CRUD" target="_blank" class="btn-shop">Portal</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-    <!--
-        Formulário responsável por enviar os dados
-        para o arquivo store.php, que fará o cadastro no banco.
-        
-        method="post" é usado para envio de dados de formulário
-        de forma mais apropriada e segura do que GET.
-    -->
-    <form action="store.php" method="post">
-        <p>
-            <label>Nome:</label><br>
-            <input type="text" name="nomecompleto" required>
-        </p>
+    <main>
+        <section class="hero-faixa-azul">
+            <div class="faixa-content">
+                <span class="num-destaque">001</span>
+                <h2 class="title">MATRÍCULA DE ALUNOS</h2>
+                <p class="subtitle">SISTEMA DE GESTÃO ACADÊMICA V.1.0</p>
+            </div>
+        </section>
 
-        <p>
-            <label>E-mail:</label><br>
-            <input type="email" name="email" required>
-        </p>
+        <section class="enrollment-section">
+            <div class="form-wrapper">
+                
+                <form action="store.php" method="post" class="enrollment-form">
+                    <div class="form-header">
+                        <span class="step-num">01</span>
+                        <h3>NOVO CADASTRO</h3>
+                    </div>
+                    
+                    <div class="form-fields">
+                        <div class="input-group">
+                            <label>Nome:</label>
+                            <input type="text" name="name" required placeholder="Nome do aluno">
+                        </div>
 
-        <p>
-            <label>Curso:</label><br>
-            <input type="text" name="document" required>
-        </p>
+                        <div class="input-group">
+                            <label>E-mail:</label>
+                            <input type="email" name="email" required placeholder="email@exemplo.com">
+                        </div>
 
-        <button type="submit">Cadastrar</button>
-    </form>
+                        <div class="input-group">
+                            <label>Curso:</label>
+                            <input type="text" name="document" required placeholder="Nome do curso">
+                        </div>
+                    </div>
 
-    <hr>
+                    <button type="submit" class="submit-btn">
+                        CADASTRAR <span>→</span>
+                    </button>
+                </form>
+            </div>
 
-    <h2>Lista de alunos</h2>
+            <div class="lab-hand-visual">
+            </div>
+        </section>
 
-    <!--
-        Tabela que exibe os alunos cadastrados no banco de dados.
-        O atributo cellpadding adiciona espaçamento interno nas células.
-    -->
-    <table cellpadding="10">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>E-mail</th>
-                <th>Curso</th>
-                <th>Cadastrado em</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!--
-                foreach percorre todos os usuários retornados do banco.
-                A cada repetição, a variável $user representa um aluno.
-            -->
-            <?php foreach ($users as $user) : ?>
-                <tr>
-                    <td><?= $user["id"] ?></td>
-                    <td><?= $user["name"] ?></td>
-                    <td><?= $user["email"] ?></td>
-                    <td><?= $user["document"] ?></td>
-                    <td><?= date("d/m/Y H:i", strtotime($user["created_at"])) ?></td>
-                    <td>
-                        <!--
-                            Link para editar o aluno.
-                            O ID é enviado pela URL para que o arquivo edit.php
-                            saiba qual registro deve ser alterado.
-                        -->
-                        <a href="edit.php?id=<?= $user["id"] ?>">Editar</a> |
+        <section id="lista" class="list-section">
+            <div class="list-container">
+                <div class="list-header">
+                    <h2>LISTA DE ALUNOS <span><?= count($users) ?></span></h2>
+                </div>
 
-                        <!--
-                            Link para excluir o aluno.
-                            O onclick chama uma confirmação em JavaScript
-                            antes de seguir para a exclusão.
-                        -->
-                        <a href="delete.php?id=<?= $user["id"] ?>" onclick="return confirm('Tem certeza que deseja excluir este aluno?')">Excluir</a>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-        <tfoot>
-            <tr>
-                <!--
-                    colspan="6" faz a célula ocupar as 6 colunas da tabela.
-                    count($users) conta quantos alunos existem no array.
-                -->
-                <td colspan="6">Total de alunos: <?= count($users) ?></td>
-            </tr>
-        </tfoot>
-    </table>
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>E-mail</th>
+                            <th>Curso</th>
+                            <th>Cadastrado em</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($users as $user) : ?>
+                            <tr>
+                                <td class="td-id"><?= $user["id"] ?></td>
+                                <td class="td-name"><?= $user["name"] ?></td>
+                                <td><?= $user["email"] ?></td>
+                                <td><span class="badge-curso"><?= $user["document"] ?></span></td>
+                                <td><?= date("d/m/Y H:i", strtotime($user["created_at"])) ?></td>
+                                <td class="td-actions">
+                                    <a href="edit.php?id=<?= $user["id"] ?>" class="btn-edit">Editar</a> |
+                                    <a href="delete.php?id=<?= $user["id"] ?>" class="btn-delete" onclick="return confirm('Tem certeza que deseja excluir este aluno?')">Excluir</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                    </table>
+            </div>
+        </section>
+    </main>
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
 
 </body>
-
 </html>

@@ -11,10 +11,11 @@ class Connect
      * Como são constantes da classe, seus valores
      * não podem ser alterados em tempo de execução.
      */
-    private const HOST = "localhost";
+    private const HOST = "127.0.0.1"; // Use o IP para evitar conflitos de DNS
+    private const PORT = "3307";      // Adicione a porta que você definiu
     private const DBNAME = "aula01";
     private const USER = "root";
-    private const PASS = "";
+    private const PASS = "";          // Mantenha vazio se não definiu senha
 
     /**
      * Retorna uma única instância de conexão com o banco.
@@ -43,11 +44,11 @@ class Connect
              * DSN = Data Source Name
              * É a string que informa ao PDO:
              * - qual banco está sendo usado (mysql)
-             * - o host
+             * - o host e a porta
              * - o nome do banco
              * - o charset
              */
-            $dsn = "mysql:host=" . self::HOST . ";dbname=" . self::DBNAME . ";charset=utf8mb4";
+            $dsn = "mysql:host=" . self::HOST . ";port=" . self::PORT . ";dbname=" . self::DBNAME . ";charset=utf8mb4";
 
             /**
              * Cria a conexão com o banco usando PDO.
@@ -58,25 +59,24 @@ class Connect
              * 3. self::PASS -> senha do banco
              * 4. array de opções da conexão
              */
-            $instance = new PDO($dsn, self::USER, self::PASS, [
-                /**
-                 * Faz o PDO lançar exceções em caso de erro.
-                 * Isso facilita o tratamento de falhas.
-                 */
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            $instance = new PDO(
+                $dsn,
+                self::USER,
+                self::PASS,
+                [
+                    /**
+                     * Faz o PDO lançar exceções em caso de erro.
+                     * Isso facilita o tratamento de falhas.
+                     */
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 
-                /**
-                 * Define que os resultados das consultas serão
-                 * retornados como array associativo.
-                 *
-                 * Exemplo:
-                 * [
-                 *   "id" => 1,
-                 *   "nome" => "João"
-                 * ]
-                 */
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-            ]);
+                    /**
+                     * Define que os resultados das consultas serão
+                     * retornados como array associativo.
+                     */
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+                ]
+            );
         }
 
         /**
